@@ -1,0 +1,5 @@
+pub struct Response is
+    pub ok:     bool
+    pub status:  int
+    pub body:    string
+end
