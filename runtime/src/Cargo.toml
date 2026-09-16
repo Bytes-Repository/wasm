@@ -1,0 +1,23 @@
+[package]
+name = "hsharp-wasm-runtime"
+version = "0.1.0"
+edition = "2021"
+description = "Runtime Rust (extern static [rust]) dla pakietu H# web-wasm — most do przeglądarki + reimplementacja rdzenia runtime'u H# na wasm32-unknown-unknown."
+license = "MIT"
+
+[lib]
+name = "hsharp_wasm_runtime"
+crate-type = ["staticlib"]
+
+# Świadomie ZERO zależności — im mniej ruchomych części w crate'cie
+# stojącym między H# a przeglądarką, tym mniejsze ryzyko, że aktualizacja
+# jakiejś zależności kiedyś po cichu zmieni ABI. To jest dokładnie ten
+# sam powód, dla którego biblioteka H#-owa też nie ma żadnych zależności
+# w [deps] swojego bytes.hk.
+[dependencies]
+
+[profile.release]
+opt-level = "s"
+lto = true
+panic = "abort"
+strip = true
