@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <title>Przykład H# → wasm (web-wasm)</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; }
+        button { font-size: 1rem; padding: 0.5rem 1rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <p>Ładowanie…</p>
+    <script type="module">
+        import { runHSharpWasm } from "./hsharp-web-loader.js";
+        runHSharpWasm("./build/app.wasm").catch((err) => {
+            document.body.innerHTML = "<pre>Błąd ładowania .wasm: " + err + "</pre>";
+            console.error(err);
+        });
+    </script>
+</body>
+</html>
