@@ -1,0 +1,43 @@
+use "web-wasm -> web_types" from "types"
+
+extern static [rust] is
+    fn hweb_fetch_get(url: string) -> int
+    fn hweb_fetch_post(url: string, body: string, content_type: string) -> int
+    fn hweb_fetch_status(request_id: int) -> int
+end
+
+;; GET, ciało odpowiedzi jako string. Zwraca `request_id`.
+pub fn get(url: string) -> int is
+    return hweb_fetch_get(url)
+end
+
+;; POST z ciałem `body` i podanym `content_type` (np.
+;; "application/json"). Zwraca `request_id`.
+pub fn post(url: string, body: string, content_type: string) -> int is
+    return hweb_fetch_post(url, body, content_type)
+end
+
+;; Wygodny skrót: POST z Content-Type: application/json.
+pub fn post_json(url: string, json_body: string) -> int is
+    return hweb_fetch_post(url, json_body, "application/json")
+end
+
+;; Kod HTTP ostatniej zakończonej odpowiedzi dla `request_id`, albo 0.
+pub fn status(request_id: int) -> int is
+    return hweb_fetch_status(request_id)
+end
+
+;; Pomocnicza funkcja do budowania `types::Response` wewnątrz
+;; `wasm_on_event`, gdy masz już `kind`/`num`/`text` pod ręką:
+;;
+;;     if kind == events::KIND_FETCH_OK is
+;;         let r: types::Response = fetch::response_ok(id, text)
+;;         ...
+;;     end
+pub fn response_ok(request_id: int, body: string) -> types::Response is
+    return types::Response { ok: true, status: hweb_fetch_status(request_id), body: body }
+end
+
+pub fn response_err(request_id: int, error_text: string) -> types::Response is
+    return types::Response { ok: false, status: hweb_fetch_status(request_id), body: error_text }
+end
