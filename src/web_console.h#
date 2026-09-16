@@ -1,0 +1,49 @@
+extern static [rust] is
+    fn hweb_console_log(msg: string)
+    fn hweb_console_info(msg: string)
+    fn hweb_console_warn(msg: string)
+    fn hweb_console_error(msg: string)
+    fn hweb_console_debug(msg: string)
+    fn hweb_console_clear()
+    fn hweb_console_group(label: string)
+    fn hweb_console_group_end()
+end
+
+;; console.log
+pub fn log(msg: string) is
+    hweb_console_log(msg)
+end
+
+;; console.info
+pub fn info(msg: string) is
+    hweb_console_info(msg)
+end
+
+;; console.warn
+pub fn warn(msg: string) is
+    hweb_console_warn(msg)
+end
+
+;; console.error
+pub fn error(msg: string) is
+    hweb_console_error(msg)
+end
+
+;; console.debug
+pub fn debug(msg: string) is
+    hweb_console_debug(msg)
+end
+
+;; console.clear()
+pub fn clear() is
+    hweb_console_clear()
+end
+
+;; console.group(label) / console.groupEnd()
+pub fn group(label: string) is
+    hweb_console_group(label)
+end
+
+pub fn group_end() is
+    hweb_console_group_end()
+end
