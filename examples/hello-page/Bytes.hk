@@ -1,0 +1,16 @@
+[package]
+-> name        => hello-page
+-> version     => 0.1.0
+-> description => Przykładowa strona H# skompilowana do .wasm z web-wasm
+-> author      => (twoje imię)
+-> license     => MIT
+
+[build]
+-> lang    => h#
+-> entry   => src/main.h#
+-> output  => build/app
+-> emit    => obj
+-> flags   => --target wasm32
+-> include => ../../src
+
+[deps]
