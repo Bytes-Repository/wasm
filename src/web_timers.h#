@@ -1,0 +1,40 @@
+extern static [rust] is
+    fn hweb_timers_set_timeout(delay_ms: int) -> int
+    fn hweb_timers_clear_timeout(id: int)
+    fn hweb_timers_set_interval(delay_ms: int) -> int
+    fn hweb_timers_clear_interval(id: int)
+    fn hweb_timers_request_animation_frame() -> int
+    fn hweb_timers_cancel_animation_frame(id: int)
+end
+
+;; Jednorazowe wywołanie po `delay_ms` milisekundach. Zwraca `timer_id`,
+;; który pojawi się jako `id` w `wasm_on_event(KIND_TIMEOUT, timer_id, ...)`.
+pub fn set_timeout(delay_ms: int) -> int is
+    return hweb_timers_set_timeout(delay_ms)
+end
+
+pub fn clear_timeout(timer_id: int) is
+    hweb_timers_clear_timeout(timer_id)
+end
+
+;; Cykliczne wywołanie co `delay_ms` milisekund, aż do `clear_interval`.
+;; Zwraca `interval_id`, dostarczany jako `id` w `KIND_INTERVAL`.
+pub fn set_interval(delay_ms: int) -> int is
+    return hweb_timers_set_interval(delay_ms)
+end
+
+pub fn clear_interval(interval_id: int) is
+    hweb_timers_clear_interval(interval_id)
+end
+
+;; Jednorazowe wywołanie przy następnej klatce renderowania. `num` w
+;; `wasm_on_event(KIND_FRAME, request_id, num, ...)` to znacznik czasu
+;; klatki w milisekundach (`DOMHighResTimeStamp`). Do pętli animacji
+;; wywołaj `request_animation_frame()` ponownie wewnątrz obsługi KIND_FRAME.
+pub fn request_animation_frame() -> int is
+    return hweb_timers_request_animation_frame()
+end
+
+pub fn cancel_animation_frame(request_id: int) is
+    hweb_timers_cancel_animation_frame(request_id)
+end
