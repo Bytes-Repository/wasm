@@ -1,0 +1,151 @@
+extern static [rust] is
+    fn hweb_dom_get_by_id(id: string) -> int
+    fn hweb_dom_query_selector(selector: string) -> int
+    fn hweb_dom_query_selector_all(selector: string) -> string
+    fn hweb_dom_create_element(tag: string) -> int
+    fn hweb_dom_body() -> int
+    fn hweb_dom_head() -> int
+    fn hweb_dom_append_child(parent: int, child: int) -> bool
+    fn hweb_dom_prepend_child(parent: int, child: int) -> bool
+    fn hweb_dom_remove(handle: int) -> bool
+    fn hweb_dom_set_inner_html(handle: int, html: string) -> bool
+    fn hweb_dom_get_inner_html(handle: int) -> string
+    fn hweb_dom_set_text(handle: int, text: string) -> bool
+    fn hweb_dom_get_text(handle: int) -> string
+    fn hweb_dom_set_attribute(handle: int, name: string, value: string) -> bool
+    fn hweb_dom_get_attribute(handle: int, name: string) -> string
+    fn hweb_dom_remove_attribute(handle: int, name: string) -> bool
+    fn hweb_dom_add_class(handle: int, class_name: string) -> bool
+    fn hweb_dom_remove_class(handle: int, class_name: string) -> bool
+    fn hweb_dom_toggle_class(handle: int, class_name: string) -> bool
+    fn hweb_dom_has_class(handle: int, class_name: string) -> bool
+    fn hweb_dom_set_style(handle: int, prop: string, value: string) -> bool
+    fn hweb_dom_get_style(handle: int, prop: string) -> string
+    fn hweb_dom_set_value(handle: int, value: string) -> bool
+    fn hweb_dom_get_value(handle: int) -> string
+    fn hweb_dom_is_valid(handle: int) -> bool
+    fn hweb_dom_parent(handle: int) -> int
+end
+
+pub struct Element is
+    pub handle: int
+end
+
+;; "Brak elementu" — odpowiednik nil dla Element. Zwracany m.in. przez
+;; `by_id` / `query`, gdy selektor niczego nie znalazł.
+pub fn none() -> Element is
+    return Element { handle: -1 }
+end
+
+pub fn by_id(id: string) -> Element is
+    return Element { handle: hweb_dom_get_by_id(id) }
+end
+
+pub fn query(selector: string) -> Element is
+    return Element { handle: hweb_dom_query_selector(selector) }
+end
+
+;; Zwraca uchwyty dopasowanych elementów jako string rozdzielany ','
+;; (np. "3,4,7"). Rozdziel go przez `str::split(result, ",")` i zbuduj
+;; `Element` dla każdej części przez `conv::str_to_int`. Prosty, w pełni
+;; stabilny format tekstowy zamiast nowego typu tablicowego w ABI.
+pub fn query_all(selector: string) -> string is
+    return hweb_dom_query_selector_all(selector)
+end
+
+pub fn create(tag: string) -> Element is
+    return Element { handle: hweb_dom_create_element(tag) }
+end
+
+pub fn body() -> Element is
+    return Element { handle: hweb_dom_body() }
+end
+
+pub fn head() -> Element is
+    return Element { handle: hweb_dom_head() }
+end
+
+impl Element is
+    pub fn is_valid(self) -> bool is
+        if self.handle < 0 is
+            return false
+        end
+        return hweb_dom_is_valid(self.handle)
+    end
+
+    pub fn append(self, child: Element) -> bool is
+        return hweb_dom_append_child(self.handle, child.handle)
+    end
+
+    pub fn prepend(self, child: Element) -> bool is
+        return hweb_dom_prepend_child(self.handle, child.handle)
+    end
+
+    pub fn remove(self) -> bool is
+        return hweb_dom_remove(self.handle)
+    end
+
+    pub fn parent(self) -> Element is
+        return Element { handle: hweb_dom_parent(self.handle) }
+    end
+
+    pub fn set_html(self, html: string) -> bool is
+        return hweb_dom_set_inner_html(self.handle, html)
+    end
+
+    pub fn html(self) -> string is
+        return hweb_dom_get_inner_html(self.handle)
+    end
+
+    pub fn set_text(self, text: string) -> bool is
+        return hweb_dom_set_text(self.handle, text)
+    end
+
+    pub fn text(self) -> string is
+        return hweb_dom_get_text(self.handle)
+    end
+
+    pub fn set_attr(self, name: string, value: string) -> bool is
+        return hweb_dom_set_attribute(self.handle, name, value)
+    end
+
+    pub fn attr(self, name: string) -> string is
+        return hweb_dom_get_attribute(self.handle, name)
+    end
+
+    pub fn remove_attr(self, name: string) -> bool is
+        return hweb_dom_remove_attribute(self.handle, name)
+    end
+
+    pub fn add_class(self, class_name: string) -> bool is
+        return hweb_dom_add_class(self.handle, class_name)
+    end
+
+    pub fn remove_class(self, class_name: string) -> bool is
+        return hweb_dom_remove_class(self.handle, class_name)
+    end
+
+    pub fn toggle_class(self, class_name: string) -> bool is
+        return hweb_dom_toggle_class(self.handle, class_name)
+    end
+
+    pub fn has_class(self, class_name: string) -> bool is
+        return hweb_dom_has_class(self.handle, class_name)
+    end
+
+    pub fn set_style(self, prop: string, value: string) -> bool is
+        return hweb_dom_set_style(self.handle, prop, value)
+    end
+
+    pub fn style(self, prop: string) -> string is
+        return hweb_dom_get_style(self.handle, prop)
+    end
+
+    pub fn set_value(self, value: string) -> bool is
+        return hweb_dom_set_value(self.handle, value)
+    end
+
+    pub fn value(self) -> string is
+        return hweb_dom_get_value(self.handle)
+    end
+end
