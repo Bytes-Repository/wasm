@@ -1,0 +1,27 @@
+extern static [rust] is
+    fn hweb_random_f64() -> f64
+    fn hweb_random_int(min: int, max: int) -> int
+    fn hweb_random_hex(n_bytes: int) -> string
+    fn hweb_random_uuid_v4() -> string
+end
+
+;; Liczba zmiennoprzecinkowa z przedziału [0.0, 1.0).
+pub fn float64() -> f64 is
+    return hweb_random_f64()
+end
+
+;; Liczba całkowita z przedziału [min, max] (włącznie z obiema granicami).
+pub fn int_range(min: int, max: int) -> int is
+    return hweb_random_int(min, max)
+end
+
+;; `n_bytes` losowych bajtów, zakodowane jako string szesnastkowy
+;; (długość wyniku = 2 * n_bytes).
+pub fn hex(n_bytes: int) -> string is
+    return hweb_random_hex(n_bytes)
+end
+
+;; Losowy identyfikator UUID v4.
+pub fn uuid_v4() -> string is
+    return hweb_random_uuid_v4()
+end
