@@ -1,0 +1,54 @@
+use "wasm -> web_console" from "console"
+use "wasm -> web_dom"     from "dom"
+use "wasm -> web_events"  from "events"
+use "wasm -> web_timers"  from "timers"
+use "wasm -> web_random"  from "random"
+use "std -> conv"             from "conv"
+
+;; Wołane RAZ, zaraz po załadowaniu modułu .wasm przez przeglądarkę
+;; (patrz glue/hsharp-web-loader.js).
+fn main() is
+    console::log("H# -> wasm: main() wystartował")
+
+    let root: dom::Element = dom::body()
+    root.set_html("")
+
+    let heading: dom::Element = dom::create("h1")
+    heading.set_text("Cześć z H#! 🎉")
+    root.append(heading)
+
+    let label: dom::Element = dom::create("p")
+    label.set_attr("id", "counter-label")
+    label.set_attr("data-count", "0")
+    label.set_text("Kliknięto: 0 razy")
+    root.append(label)
+
+    let button: dom::Element = dom::create("button")
+    button.set_attr("id", "counter-button")
+    button.set_text("Kliknij mnie")
+    root.append(button)
+
+    ;; `listener_id` zwrócony przez `listen` to to samo `id`, które
+    ;; przyjdzie później do `wasm_on_event(KIND_DOM_EVENT, listener_id, ...)`
+    ;; — to pierwszy zarejestrowany nasłuch, więc jego id to 0.
+    events::listen(button, "click")
+    timers::set_interval(3000)
+end
+
+;; JEDYNY, dobrze znany punkt wejścia dla wszystkich zdarzeń
+;; asynchronicznych (patrz web_events.h#).
+pub fn wasm_on_event(kind: int, id: int, num: f64, text: string) is
+    if kind == events::KIND_DOM_EVENT is
+        if id == 0 is  ;; nasłuch "click" na przycisku, zarejestrowany jako pierwszy
+            let label: dom::Element = dom::by_id("counter-label")
+            let current: int = conv::str_to_int(label.attr("data-count"))
+            let next: int = current + 1
+            label.set_attr("data-count", to_string(next))
+            label.set_text("Kliknięto: " + to_string(next) + " razy")
+        end
+    end
+
+    if kind == events::KIND_INTERVAL is
+        console::log("tick co 3s, losowy znacznik: " + random::uuid_v4())
+    end
+end
