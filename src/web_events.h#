@@ -1,0 +1,37 @@
+use "web-wasm -> web_dom" from "dom"
+
+;; Rodzaje zdarzeń dostarczanych do `wasm_on_event`. Jeden, stabilny punkt
+;; wejścia zamiast osobnych callbacków dla każdego API (timery, fetch,
+;; DOM) — łatwiej utrzymać kompatybilność ABI w czasie.
+;;
+;; STABILNOŚĆ (v0.1.0): te wartości liczbowe są częścią zamrożonego ABI
+;; między tym pakietem a glue/hsharp-web-loader.js — nie zmieniaj ich bez
+;; jednoczesnej zmiany MAJOR wersji obu stron (patrz docs/API.md).
+pub const KIND_TIMEOUT:   int = 1  ;; web_timers::set_timeout
+pub const KIND_INTERVAL:  int = 2  ;; web_timers::set_interval
+pub const KIND_FRAME:     int = 3  ;; web_timers::request_animation_frame
+pub const KIND_DOM_EVENT: int = 4  ;; web_events::listen (click, input, ...)
+pub const KIND_FETCH_OK:  int = 5  ;; web_fetch::get / web_fetch::post — sukces
+pub const KIND_FETCH_ERR: int = 6  ;; web_fetch::get / web_fetch::post — błąd
+
+extern static [rust] is
+    fn hweb_events_listen(handle: int, event_type: string) -> int
+    fn hweb_events_unlisten(listener_id: int) -> bool
+end
+
+;; Zaczyna nasłuchiwać zdarzenia `event_type` (np. "click", "input",
+;; "submit", "keydown") na danym elemencie. Zwraca `listener_id`, który
+;; pojawi się jako `id` w `wasm_on_event(KIND_DOM_EVENT, listener_id, ...)`.
+;;
+;; Zwraca -1, jeśli `el` nie jest prawidłowym elementem.
+pub fn listen(el: dom::Element, event_type: string) -> int is
+    if !el.is_valid() is
+        return -1
+    end
+    return hweb_events_listen(el.handle, event_type)
+end
+
+;; Odłącza nasłuch zarejestrowany przez `listen`.
+pub fn unlisten(listener_id: int) -> bool is
+    return hweb_events_unlisten(listener_id)
+end
