@@ -1,0 +1,17 @@
+extern static [rust] is
+    fn hweb_time_now_ms() -> f64
+    fn hweb_time_perf_now_ms() -> f64
+end
+
+;; Milisekundy od epoki Unixa (`Date.now()`) — do znaczników czasu,
+;; logów, porównań "kiedy to się stało".
+pub fn now_ms() -> f64 is
+    return hweb_time_now_ms()
+end
+
+;; Wysokorozdzielczy zegar monotoniczny (`performance.now()`) — do
+;; mierzenia czasu trwania (np. FPS, benchmarki w pętli renderowania).
+;; NIE reprezentuje czasu kalendarzowego.
+pub fn perf_now_ms() -> f64 is
+    return hweb_time_perf_now_ms()
+end
