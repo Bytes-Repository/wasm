@@ -1,0 +1,54 @@
+extern static [rust] is
+    fn hweb_storage_local_get(key: string) -> string
+    fn hweb_storage_local_set(key: string, value: string) -> bool
+    fn hweb_storage_local_remove(key: string) -> bool
+    fn hweb_storage_local_clear() -> bool
+    fn hweb_storage_local_has(key: string) -> bool
+    fn hweb_storage_session_get(key: string) -> string
+    fn hweb_storage_session_set(key: string, value: string) -> bool
+    fn hweb_storage_session_remove(key: string) -> bool
+    fn hweb_storage_session_clear() -> bool
+    fn hweb_storage_session_has(key: string) -> bool
+end
+
+;; localStorage.getItem — zwraca "" gdy klucz nie istnieje. Rozróżnij
+;; "brak klucza" od "pusta wartość" przez `local_has`.
+pub fn local_get(key: string) -> string is
+    return hweb_storage_local_get(key)
+end
+
+pub fn local_set(key: string, value: string) -> bool is
+    return hweb_storage_local_set(key, value)
+end
+
+pub fn local_remove(key: string) -> bool is
+    return hweb_storage_local_remove(key)
+end
+
+pub fn local_clear() -> bool is
+    return hweb_storage_local_clear()
+end
+
+pub fn local_has(key: string) -> bool is
+    return hweb_storage_local_has(key)
+end
+
+pub fn session_get(key: string) -> string is
+    return hweb_storage_session_get(key)
+end
+
+pub fn session_set(key: string, value: string) -> bool is
+    return hweb_storage_session_set(key, value)
+end
+
+pub fn session_remove(key: string) -> bool is
+    return hweb_storage_session_remove(key)
+end
+
+pub fn session_clear() -> bool is
+    return hweb_storage_session_clear()
+end
+
+pub fn session_has(key: string) -> bool is
+    return hweb_storage_session_has(key)
+end
